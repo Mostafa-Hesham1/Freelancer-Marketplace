@@ -5,8 +5,15 @@ import { MongoClient } from 'mongodb';
 
 dotenv.config({ path: __dirname + '/../.env' });
 
+console.log('MONGO_URL:', process.env.MONGO_URL);
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.enableCors({
+    origin: 'http://localhost:3000', // Allow requests from the frontend
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+  });
   
   const mongoUrl = process.env.MONGO_URL;
   if (!mongoUrl) {

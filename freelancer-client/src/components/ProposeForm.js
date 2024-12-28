@@ -1,19 +1,49 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Typography, TextField, Button, Paper, Grid } from '@mui/material';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import axios from 'axios';
 
 function ProposeForm() {
   const history = useHistory();
-  const [isAuthenticated, setIsAuthenticated] = useState(true); // Replace with actual authentication logic
+  const { id } = useParams(); // Ensure this line correctly retrieves the job ID from the URL
+  const { user } = useAuth();
+  const [coverLetter, setCoverLetter] = useState('');
+  const [hourlyRate, setHourlyRate] = useState('');
+  const [estimatedHours, setEstimatedHours] = useState('');
 
-  const handleSubmit = (event) => {
+  useEffect(() => {
+    console.log('Job ID:', id); // Add this line to debug the job ID
+    if (!id) {
+      console.error('Job ID is undefined');
+      history.push('/job-listings'); // Redirect to job listings if job ID is undefined
+    }
+  }, [id, history]);
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    if (!isAuthenticated) {
+    if (!user) {
       history.push('/login');
       return;
     }
-    // Add logic to handle proposal submission
+    try {
+      const proposal = {
+        userId: user.id,
+        freelancerName: user.name,
+        freelancerEmail: user.email,
+        coverLetter,
+        hourlyRate,
+        estimatedHours,
+        price: hourlyRate * estimatedHours,
+        priceType: 'hourly',
+      };
+      await axios.post(`http://localhost:5000/jobs/${id}/proposals`, proposal);
+      alert('Proposal submitted successfully');
+      history.push('/dashboard'); // Redirect to dashboard after successful submission
+    } catch (error) {
+      console.error('Error submitting proposal', error);
+      alert('Failed to submit proposal');
+    }
   };
 
   return (
@@ -29,6 +59,8 @@ function ProposeForm() {
             margin="normal"
             multiline
             rows={4}
+            value={coverLetter}
+            onChange={(e) => setCoverLetter(e.target.value)}
             required
             sx={{ border: '1px solid', borderColor: 'grey.300', borderRadius: 1 }}
           />
@@ -37,6 +69,8 @@ function ProposeForm() {
             label="Hourly Rate"
             margin="normal"
             type="number"
+            value={hourlyRate}
+            onChange={(e) => setHourlyRate(e.target.value)}
             required
             sx={{ border: '1px solid', borderColor: 'grey.300', borderRadius: 1 }}
           />
@@ -45,6 +79,8 @@ function ProposeForm() {
             label="Estimated Hours"
             margin="normal"
             type="number"
+            value={estimatedHours}
+            onChange={(e) => setEstimatedHours(e.target.value)}
             required
             sx={{ border: '1px solid', borderColor: 'grey.300', borderRadius: 1 }}
           />

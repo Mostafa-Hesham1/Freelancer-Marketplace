@@ -19,6 +19,8 @@ import AppTheme from '../shared-theme/AppTheme';
 import ColorModeSelect from '../shared-theme/ColorModeSelect';
 import { loginUser } from '../api';
 import { useHistory } from 'react-router-dom';
+import { useState } from 'react';
+import { useAuth } from '../context/AuthContext';
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -71,6 +73,10 @@ export default function SignIn(props) {
   const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
   const [open, setOpen] = React.useState(false);
   const history = useHistory();
+  const [message, setMessage] = useState('');
+  const { setIsAuthenticated, setUser } = useAuth();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -85,28 +91,24 @@ export default function SignIn(props) {
     if (emailError || passwordError) {
       return;
     }
-    const data = new FormData(event.currentTarget);
-    const credentials = {
-      email: data.get('email'),
-      password: data.get('password'),
-    };
     try {
-      const response = await loginUser(credentials);
-      console.log('Login successful:', response);
-      // Handle successful login (e.g., redirect to dashboard)
+      const user = await loginUser({ email, password });
+      console.log('Login successful:', user);
+      setMessage('Login successful!');
+      setUser(user);
+      setIsAuthenticated(true); // Set authentication state
+      localStorage.setItem('userId', user.id); // Store user ID in localStorage
+      history.push('/profile'); // Redirect to profile page after successful login
     } catch (error) {
       console.error('Login failed:', error);
-      // Handle login failure (e.g., show error message)
+      setMessage('Login failed: ' + error.message);
     }
   };
 
   const validateInputs = () => {
-    const email = document.getElementById('email');
-    const password = document.getElementById('password');
-
     let isValid = true;
 
-    if (!email.value || !/\S+@\S+\.\S+/.test(email.value)) {
+    if (!email || !/\S+@\S+\.\S+/.test(email)) {
       setEmailError(true);
       setEmailErrorMessage('Please enter a valid email address.');
       isValid = false;
@@ -115,9 +117,10 @@ export default function SignIn(props) {
       setEmailErrorMessage('');
     }
 
-    if (!password.value || password.value.length < 6) {
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
+    if (!password || !passwordRegex.test(password)) {
       setPasswordError(true);
-      setPasswordErrorMessage('Password must be at least 6 characters long.');
+      setPasswordErrorMessage('Password must be at least 8 characters long and contain at least one uppercase and one lowercase letter.');
       isValid = false;
     } else {
       setPasswordError(false);
@@ -140,6 +143,15 @@ export default function SignIn(props) {
           >
             Sign in
           </Typography>
+          {message && (
+            <Typography
+              variant="body2"
+              color="error"
+              sx={{ textAlign: 'center', marginBottom: 2 }}
+            >
+              {message}
+            </Typography>
+          )}
           <Box
             component="form"
             onSubmit={handleSubmit}
@@ -166,6 +178,8 @@ export default function SignIn(props) {
                 fullWidth
                 variant="outlined"
                 color={emailError ? 'error' : 'primary'}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </FormControl>
             <FormControl>
@@ -183,6 +197,8 @@ export default function SignIn(props) {
                 fullWidth
                 variant="outlined"
                 color={passwordError ? 'error' : 'primary'}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
               />
             </FormControl>
             <FormControlLabel

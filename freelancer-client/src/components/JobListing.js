@@ -1,20 +1,40 @@
 import React, { useState } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import { Box, Typography, TextField, Button, Paper, FormControl, InputLabel, Select, MenuItem, Grid } from '@mui/material';
+import { useAuth } from '../context/AuthContext';
+import { addJob } from '../api'; // Add this line
 
 function JobListing() {
   const { skill } = useParams();
   const history = useHistory();
+  const { user } = useAuth();
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [price, setPrice] = useState('');
   const [priceType, setPriceType] = useState('hourly');
-  const [isAuthenticated, setIsAuthenticated] = useState(true); // Replace with actual authentication logic
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    if (!isAuthenticated) {
+    if (!user) {
       history.push('/login');
       return;
     }
-    // Add logic to handle job listing submission
+    try {
+      const job = {
+        title,
+        description,
+        price,
+        priceType,
+        posterName: user.name,
+        posterEmail: user.email,
+      };
+      await addJob(job); // Update this line
+      alert('Job added successfully');
+      history.push('/job-listings/development'); // Redirect to job listings page after successful submission
+    } catch (error) {
+      console.error('Error adding job', error);
+      alert('Failed to add job');
+    }
   };
 
   return (
@@ -28,6 +48,8 @@ function JobListing() {
             fullWidth
             label="Job Title"
             margin="normal"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
             required
             sx={{ border: '1px solid', borderColor: 'grey.300', borderRadius: 1 }}
           />
@@ -37,6 +59,8 @@ function JobListing() {
             margin="normal"
             multiline
             rows={4}
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
             required
             sx={{ border: '1px solid', borderColor: 'grey.300', borderRadius: 1 }}
           />
@@ -57,6 +81,8 @@ function JobListing() {
             label={priceType === 'hourly' ? 'Price per Hour' : 'Total Project Price'}
             margin="normal"
             type="number"
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
             required
             sx={{ border: '1px solid', borderColor: 'grey.300', borderRadius: 1 }}
           />

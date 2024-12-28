@@ -12,7 +12,8 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
-import { useHistory } from 'react-router-dom';
+import { useHistory, Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext'; // Ensure this line is correct
 
 const pages = ['Find Talent', 'Find Work', 'Pricing', 'What is FreelanceX?'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Inbox', 'Logout'];
@@ -20,7 +21,7 @@ const settings = ['Profile', 'Account', 'Dashboard', 'Inbox', 'Logout'];
 function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
-  const [isAuthenticated, setIsAuthenticated] = React.useState(false); // Replace with actual authentication logic
+  const { isAuthenticated, setIsAuthenticated, user, logout } = useAuth(); // Add this line
   const history = useHistory();
 
   const handleOpenNavMenu = (event) => {
@@ -39,6 +40,11 @@ function ResponsiveAppBar() {
   };
 
   const handleSignIn = () => {
+    history.push('/login');
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
     history.push('/login');
   };
 
@@ -66,11 +72,25 @@ function ResponsiveAppBar() {
     history.push('/pricing');
   };
 
+  const handleProfile = () => {
+    history.push('/profile');
+  };
+
   return (
-    <AppBar position="static">
+    <AppBar position="static" sx={{ backgroundColor: 'darkblue' }}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
+          <Box
+            component="img"
+            src="pngaaa.com-220905.png"
+            alt="Logo"
+            sx={{
+              height: 40,
+              mr: 2,
+              display: { xs: 'flex', md: 'flex' }, // Ensure the logo appears on both small and large screens
+              mx: { xs: 'auto', md: 0 } // Center the logo on small screens
+            }}
+          />
           <Typography
             variant="h6"
             noWrap
@@ -124,7 +144,6 @@ function ResponsiveAppBar() {
               ))}
             </Menu>
           </Box>
-          <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
           <Typography
             variant="h5"
             noWrap
@@ -140,6 +159,7 @@ function ResponsiveAppBar() {
               color: 'inherit',
               textDecoration: 'none',
               cursor: 'pointer',
+              textAlign: 'center' // Center the text on small screens
             }}
           >
             FreelanceX
@@ -184,7 +204,7 @@ function ResponsiveAppBar() {
               onClose={handleCloseUserMenu}
             >
               {settings.map((setting) => (
-                <MenuItem key={setting} onClick={setting === 'Inbox' ? handleInbox : handleCloseUserMenu}>
+                <MenuItem key={setting} onClick={setting === 'Logout' ? handleLogout : setting === 'Profile' ? handleProfile : setting === 'Dashboard' ? () => history.push('/dashboard') : handleCloseUserMenu}>
                   <Typography sx={{ textAlign: 'center' }}>{setting}</Typography>
                 </MenuItem>
               ))}

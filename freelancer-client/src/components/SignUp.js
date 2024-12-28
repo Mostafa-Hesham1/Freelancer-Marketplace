@@ -17,6 +17,9 @@ import { GoogleIcon, FacebookIcon } from './CustomIcons';
 import AppTheme from '../shared-theme/AppTheme';
 import ColorModeSelect from '../shared-theme/ColorModeSelect';
 import { registerUser } from '../api';
+import { useHistory } from 'react-router-dom'; // Add this line
+import { useState } from 'react'; // Add this line
+import { useAuth } from '../context/AuthContext'; // Ensure this line is correct
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -70,6 +73,10 @@ export default function SignUp(props) {
   const [passwordError, setPasswordError] = React.useState(false);
   const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
 
+  const history = useHistory(); // Add this line
+  const [message, setMessage] = useState(''); // Add this line
+  const { setIsAuthenticated } = useAuth(); // Ensure this line is correct
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (nameError || emailError || passwordError) {
@@ -84,10 +91,11 @@ export default function SignUp(props) {
     try {
       const response = await registerUser(user);
       console.log('Registration successful:', response);
-      // Handle successful registration (e.g., redirect to login)
+      setMessage('Signup successful! Please log in.');
+      history.push('/login'); // Redirect to login page after successful signup
     } catch (error) {
       console.error('Registration failed:', error);
-      // Handle registration failure (e.g., show error message)
+      setMessage('Registration failed: ' + error.message);
     }
   };
 
@@ -116,9 +124,10 @@ export default function SignUp(props) {
       setEmailErrorMessage('');
     }
 
-    if (!password.value || password.value.length < 6) {
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
+    if (!password.value || !passwordRegex.test(password.value)) {
       setPasswordError(true);
-      setPasswordErrorMessage('Password must be at least 6 characters long.');
+      setPasswordErrorMessage('Password must be at least 8 characters long and contain at least one uppercase and one lowercase letter.');
       isValid = false;
     } else {
       setPasswordError(false);
@@ -141,6 +150,15 @@ export default function SignUp(props) {
           >
             Sign up
           </Typography>
+          {message && (
+            <Typography
+              variant="body2"
+              color="error"
+              sx={{ textAlign: 'center', marginBottom: 2 }}
+            >
+              {message}
+            </Typography>
+          )}
           <Box
             component="form"
             onSubmit={handleSubmit}

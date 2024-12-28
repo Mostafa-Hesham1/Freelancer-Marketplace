@@ -1,7 +1,4 @@
-
 import { Module } from '@nestjs/common';
 
-@Module({
-  // ...module configuration...
-})
+@Module({})
 export class JobListingsModule {}

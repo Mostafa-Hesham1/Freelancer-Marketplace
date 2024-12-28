@@ -1,9 +1,16 @@
 import { Module } from '@nestjs/common';
-import { JobListingsModule } from './job-listings/job-listings.module';
-import { JobProposalsModule } from './job-proposals/job-proposals.module';
-import { JobCategoriesModule } from './job-categories/job-categories.module';
+import { ConfigModule } from '@nestjs/config';
+import { MongooseModule } from '@nestjs/mongoose';
+import { JobModule } from './modules/job.module';
 
 @Module({
-  imports: [JobListingsModule, JobProposalsModule, JobCategoriesModule],
+  imports: [
+    ConfigModule.forRoot(),
+    MongooseModule.forRoot(process.env.MONGO_URL, {
+      serverSelectionTimeoutMS: 10000, 
+      connectTimeoutMS: 10000, 
+    }),
+    JobModule,
+  ],
 })
 export class AppModule {}

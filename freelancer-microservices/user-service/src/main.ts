@@ -7,7 +7,7 @@ dotenv.config({ path: __dirname + '/../.env' });
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  
+
   const mongoUrl = process.env.MONGO_URL;
   if (!mongoUrl) {
     console.error('MONGO_URL is not defined in the environment variables');
@@ -21,6 +21,12 @@ async function bootstrap() {
   } catch (error) {
     console.error('Failed to connect to MongoDB', error);
   }
+
+  app.enableCors({
+    origin: 'http://localhost:3000', // Allow requests from the frontend
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+  });
 
   await app.listen(process.env.PORT || 3001);
 }

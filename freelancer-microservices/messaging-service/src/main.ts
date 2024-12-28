@@ -3,7 +3,7 @@ dotenv.config({ path: __dirname + '/../.env' });
 
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { MongoClient } from 'mongodb';
+import { MongoClient, MongoClientOptions } from 'mongodb';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -14,7 +14,12 @@ async function bootstrap() {
     process.exit(1);
   }
 
-  const client = new MongoClient(mongoUrl);
+  const options: MongoClientOptions = {
+    ssl: true,
+    tlsAllowInvalidCertificates: true, // Use this option if you have self-signed certificates
+  };
+
+  const client = new MongoClient(mongoUrl, options);
   try {
     await client.connect();
     console.log('Connected to MongoDB');
