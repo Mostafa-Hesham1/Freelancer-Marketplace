@@ -43,7 +43,7 @@ All microservices are built with NestJS and MongoDB:
    - Real-time messaging between users
    - Message history and inbox management
 
-4. **Content Service**
+4. **Content Service** (Port: 4000)
    - Content management and storage
 
 ## 🛠️ Tech Stack
@@ -143,7 +143,7 @@ npm install
 
 Create a `.env` file:
 ```env
-PORT=7000
+PORT=4000
 MONGO_URL=mongodb://localhost:27017/content-service
 ```
 
