@@ -96,7 +96,7 @@ Create a `.env` file in the `freelancer-client` directory:
 REACT_APP_API_URL=http://localhost:3001
 ```
 
-**Note**: The frontend communicates with the User Service (port 3001) as the primary API gateway. If you need to access other services directly, you can add additional environment variables like `REACT_APP_JOB_API_URL`, `REACT_APP_MESSAGING_API_URL`, etc.
+**Note**: The frontend directly communicates with multiple microservices. The User Service (port 3001) handles authentication, while the Job Service (port 5000) is accessed directly for job-related operations. The Messaging Service (port 6000) handles messaging functionality.
 
 ### 3. Setup Backend Microservices
 
@@ -285,10 +285,10 @@ Freelancer-Marketplace/
 ## 🔑 API Endpoints
 
 ### User Service (Port 3001)
-- `POST /auth/register` - Register new user
-- `POST /auth/login` - User login
-- `GET /users/:id` - Get user profile
-- `PUT /users/:id` - Update user profile
+- `POST /user/signup` - Register new user
+- `POST /user/login` - User login
+- `GET /user/me` - Get current user profile
+- `PUT /user/:id` - Update user profile
 
 ### Job Service (Port 5000)
 - `GET /jobs` - Get all jobs
@@ -386,7 +386,9 @@ For support, please open an issue in the GitHub repository or contact the mainta
 ---
 
 **Important Security Notes**: 
-- Replace all placeholder values (JWT_SECRET, MongoDB URLs, etc.) with your actual secure configuration values
-- Use strong, randomly generated secrets for JWT_SECRET (minimum 32 characters)
+- **CRITICAL**: Replace ALL placeholder values immediately, especially `JWT_SECRET` 
+- Generate a strong, random JWT_SECRET using: `openssl rand -base64 32` or `node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"`
+- Use unique, secure MongoDB URLs for each service (avoid using default localhost for production)
 - Never commit sensitive information or actual credentials to version control
 - Add `.env` files to `.gitignore` to prevent accidental commits of secrets
+- The example placeholders like `YOUR_ACTUAL_JWT_SECRET_HERE_REPLACE_WITH_SECURE_VALUE` should NEVER be used as-is
