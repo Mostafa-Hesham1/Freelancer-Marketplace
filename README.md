@@ -198,9 +198,9 @@ npm test
 
 ### Backend Tests
 
-For each microservice:
+For each microservice (replace `user-service` with `job-service`, `messaging-service`, or `content-service` as needed):
 ```bash
-cd freelancer-microservices/[service-name]
+cd freelancer-microservices/user-service
 npm test                  # Run tests
 npm run test:watch        # Run tests in watch mode
 npm run test:cov          # Run tests with coverage
@@ -215,15 +215,15 @@ npm run test:e2e          # Run end-to-end tests
 cd freelancer-client
 npm run lint
 
-# Backend (for each service)
-cd freelancer-microservices/[service-name]
+# Backend (replace 'user-service' with any service name)
+cd freelancer-microservices/user-service
 npm run lint
 ```
 
 ### Formatting
 ```bash
-# Backend (for each service)
-cd freelancer-microservices/[service-name]
+# Backend (replace 'user-service' with any service name)
+cd freelancer-microservices/user-service
 npm run format
 ```
 
@@ -328,8 +328,9 @@ npm run build
 The build artifacts will be stored in the `build/` directory.
 
 ### Backend Services
+For each service (replace `user-service` with the specific service name):
 ```bash
-cd freelancer-microservices/[service-name]
+cd freelancer-microservices/user-service
 npm run build
 npm run start:prod
 ```
@@ -350,10 +351,6 @@ Contributions are welcome! Please follow these steps:
 - Add tests for new features
 - Update documentation as needed
 - Run linting before committing
-
-## 🐛 Known Issues
-
-- None currently reported
 
 ## 📝 Future Enhancements
 
