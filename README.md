@@ -52,7 +52,7 @@ All microservices are built with NestJS and MongoDB:
 - React 18.3.1
 - React Router DOM 5.3.4
 - Material-UI (MUI) 6.1.9
-- Axios for HTTP requests
+- Axios 1.7.9 for HTTP requests
 - Context API for state management
 
 ### Backend
@@ -96,6 +96,8 @@ Create a `.env` file in the `freelancer-client` directory:
 REACT_APP_API_URL=http://localhost:3001
 ```
 
+**Note**: The frontend communicates with the User Service (port 3001) as the primary API gateway. If you need to access other services directly, you can add additional environment variables like `REACT_APP_JOB_API_URL`, `REACT_APP_MESSAGING_API_URL`, etc.
+
 ### 3. Setup Backend Microservices
 
 #### User Service
@@ -108,7 +110,7 @@ Create a `.env` file:
 ```env
 PORT=3001
 MONGO_URL=mongodb://localhost:27017/user-service
-JWT_SECRET=your-secret-key-here
+JWT_SECRET=YOUR_ACTUAL_JWT_SECRET_HERE_REPLACE_WITH_SECURE_VALUE
 ```
 
 #### Job Service
@@ -315,7 +317,7 @@ REACT_APP_API_URL=http://localhost:3001
 ```env
 PORT=<service-port>
 MONGO_URL=mongodb://localhost:27017/<database-name>
-JWT_SECRET=<your-secret-key>  # Only for user-service
+JWT_SECRET=YOUR_ACTUAL_JWT_SECRET_HERE  # Only required for user-service
 ```
 
 ## 🚢 Production Build
@@ -385,4 +387,8 @@ For support, please open an issue in the GitHub repository or contact the mainta
 
 ---
 
-**Note**: Make sure to replace placeholder values (like JWT_SECRET, MongoDB URLs) with your actual configuration values. Never commit sensitive information to version control.
+**Important Security Notes**: 
+- Replace all placeholder values (JWT_SECRET, MongoDB URLs, etc.) with your actual secure configuration values
+- Use strong, randomly generated secrets for JWT_SECRET (minimum 32 characters)
+- Never commit sensitive information or actual credentials to version control
+- Add `.env` files to `.gitignore` to prevent accidental commits of secrets
