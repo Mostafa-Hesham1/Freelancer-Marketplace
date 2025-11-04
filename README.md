@@ -213,14 +213,12 @@ npm run test:e2e          # Run end-to-end tests
 
 ### Linting
 ```bash
-# Frontend
-cd freelancer-client
-npm run lint
-
 # Backend (replace 'user-service' with any service name)
 cd freelancer-microservices/user-service
 npm run lint
 ```
+
+**Note**: The frontend uses Create React App's built-in ESLint configuration, which runs automatically during development (`npm start`) and build (`npm run build`).
 
 ### Formatting
 ```bash
